@@ -12,6 +12,7 @@ use cursive::Cursive;
 use cursive_buffered_backend::BufferedBackend;
 use std::fs;
 use std::io::Write;
+use std::process::exit;
 
 use crate::wiki::search::SearchResult;
 
@@ -152,6 +153,12 @@ fn start_application() {
     if std::panic::catch_unwind(|| siv_box.lock().unwrap().run_with(|| backend())).is_err() {
         error::print_panic();
     }
+
+    siv_box.lock().unwrap().quit();
+
+    // reset the terminal: https://github.com/gyscos/cursive/issues/415
+    drop(siv_box);
+    exit(0)
 }
 
 fn handle_arguments() -> Box<dyn FnOnce(&mut Cursive) + Send> {
